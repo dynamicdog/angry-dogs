@@ -1,0 +1,17 @@
+{
+  "name": "angry-dogs",
+  "version": "0.0.0",
+  "description": "",
+  "author": "Mattias Erming",
+  "main": "serve.js",
+  "scripts": {
+    "start": "node serve.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/dynamicdog/angry-dogs"
+  },
+  "dependencies": {
+    "express": "^4.10.4"
+  }
+}
