@@ -72,6 +72,7 @@ window.onload = function() {
       }
     };
     if (dog.input.pointerOver()) {
+      reset();
       drag.target = dog;
       drag.offset = {
         x: Math.round(drag.position.x - dog.body.x),
@@ -81,6 +82,9 @@ window.onload = function() {
   }
   
   function release() {
+    if (drag.target) {
+      fire();
+    }
     drag = null;
   }
   
@@ -110,5 +114,27 @@ window.onload = function() {
       drag.position.x,
       drag.position.y
     );
+  }
+  
+  function fire() {
+    var speed = 800;
+    
+    var x = drag.position.x + drag.camera.x - dog.body.x;
+    var y = drag.position.y + drag.camera.y - dog.body.y;
+    x = x / 100;
+    y = y / 100;
+    
+    launchAngle = {
+      x: x,
+      y: y
+    };
+    
+    dog.body.velocity.x = speed * launchAngle.x;
+    dog.body.velocity.y = speed * launchAngle.y;
+  }
+  
+  function reset() {
+    dog.body.velocity.x = 0;
+    dog.body.velocity.y = 0;
   }
 };
