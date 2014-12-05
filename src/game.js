@@ -32,7 +32,7 @@ window.onload = function() {
   }
 
   function create() {
-    game.world.setBounds(0, 0, world.width, world.height);
+    game.world.setBounds(0, 0, world.width, world.height - 60);
     game.physics.startSystem(Phaser.Physics.P2JS);
     game.stage.backgroundColor = "#6495ed";
     game.input.onDown.add(grab, this);
@@ -44,6 +44,7 @@ window.onload = function() {
     dog = game.add.sprite(center.x() / 2, center.y(), "dog");
     dog.inputEnabled = true;
     game.physics.p2.enable(dog);
+    game.physics.p2.gravity.y = 800;
   }
 
   function update() {
