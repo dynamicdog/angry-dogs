@@ -1,6 +1,10 @@
 window.onload = function() {
   var width = 960;
   var height = 480;
+  var world = {
+    width: width * 2,
+    height: height
+  };
 
   var game = new Phaser.Game(
     width,
@@ -9,7 +13,7 @@ window.onload = function() {
     "", {
       preload: preload,
       create: create,
-      update: update,
+      update: update
     }
   );
 
@@ -28,16 +32,16 @@ window.onload = function() {
   }
 
   function create() {
+    game.world.setBounds(0, 0, world.width, world.height);
     game.physics.startSystem(Phaser.Physics.P2JS);
     game.stage.backgroundColor = "#6495ed";
-    
     game.input.onDown.add(grab, this);
     game.input.onUp.add(release, this);
     
-    bitmap = game.add.bitmapData(width, height);
+    bitmap = game.add.bitmapData(world.width, world.height);
     game.add.sprite(0, 0, bitmap);
     
-    dog = game.add.sprite(center.x(), center.y(), "dog");
+    dog = game.add.sprite(center.x() / 2, center.y(), "dog");
     dog.inputEnabled = true;
     game.physics.p2.enable(dog);
   }
@@ -51,7 +55,8 @@ window.onload = function() {
       drag.target.body.x = game.input.x - drag.offset.x;
       drag.target.body.y = game.input.y - drag.offset.y;
     } else {
-      // ..
+      game.camera.x = drag.position.x + drag.camera.x - game.input.x;
+      game.camera.y = drag.position.y + drag.camera.y - game.input.y;
     }
   }
   
@@ -60,6 +65,10 @@ window.onload = function() {
       position: {
         x: game.input.x,
         y: game.input.y,
+      },
+      camera: {
+        x: game.camera.x,
+        y: game.camera.y,
       }
     };
     if (dog.input.pointerOver()) {
@@ -81,7 +90,10 @@ window.onload = function() {
       if (drag.target) {
         bitmap.ctx.beginPath();
         bitmap.ctx.moveTo(dog.body.x, dog.body.y);
-        bitmap.ctx.lineTo(drag.position.x, drag.position.y);
+        bitmap.ctx.lineTo(
+          drag.position.x + drag.camera.x,
+          drag.position.y + drag.camera.y
+        );
         bitmap.ctx.lineWidth = Math.max(10 - Math.floor(getDragDistance() / 20), 4);
         bitmap.ctx.strokeStyle = "white";
         bitmap.ctx.stroke();
