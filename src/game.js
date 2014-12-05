@@ -5,6 +5,8 @@ window.onload = function() {
     width: width * 2,
     height: height
   };
+  
+  var DEBUG = true;
 
   var game = new Phaser.Game(
     width,
@@ -28,27 +30,28 @@ window.onload = function() {
   };
 
   function preload() {
+    game.time.advancedTiming = true;
     game.load.image("dog", "img/dog_32.png");
   }
 
   function create() {
-    game.world.setBounds(0, 0, world.width, world.height - 60);
-    game.physics.startSystem(Phaser.Physics.P2JS);
+    game.world.setBounds(0, 0, world.width, world.height - 100);
     game.stage.backgroundColor = "#6495ed";
     game.input.onDown.add(grab, this);
     game.input.onUp.add(release, this);
-    
+    game.physics.startSystem(Phaser.Physics.P2JS);
+
     bitmap = game.add.bitmapData(world.width, world.height);
     game.add.sprite(0, 0, bitmap);
     
     dog = game.add.sprite(center.x() / 2, center.y(), "dog");
     dog.inputEnabled = true;
     game.physics.p2.enable(dog);
-    game.physics.p2.gravity.y = 800;
   }
 
   function update() {
     drawLine();
+    debug();
     if (!drag) {
       return;
     }
@@ -73,7 +76,7 @@ window.onload = function() {
       }
     };
     if (dog.input.pointerOver()) {
-      reset();
+      game.physics.p2.gravity.y = 800;
       drag.target = dog;
       drag.offset = {
         x: Math.round(drag.position.x - dog.body.x),
@@ -119,23 +122,17 @@ window.onload = function() {
   
   function fire() {
     var speed = 800;
-    
-    var x = drag.position.x + drag.camera.x - dog.body.x;
-    var y = drag.position.y + drag.camera.y - dog.body.y;
-    x = x / 100;
-    y = y / 100;
-    
-    launchAngle = {
-      x: x,
-      y: y
-    };
-    
-    dog.body.velocity.x = speed * launchAngle.x;
-    dog.body.velocity.y = speed * launchAngle.y;
+    var x = (drag.position.x + drag.camera.x - dog.body.x) / 100;
+    var y = (drag.position.y + drag.camera.y - dog.body.y) / 100;
+    dog.body.velocity.x = speed * x;
+    dog.body.velocity.y = speed * y;
   }
   
-  function reset() {
-    dog.body.velocity.x = 0;
-    dog.body.velocity.y = 0;
+  function debug() {
+    if (DEBUG) {
+      game.debug.text("Angry Dogs", 20, 30);
+      game.debug.text("FPS: " + game.time.fps, 20, 50);
+      game.debug.cameraInfo(game.camera, 20, 80);
+    }
   }
 };
