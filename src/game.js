@@ -13,8 +13,10 @@ window.onload = function() {
     }
   );
 
-  var dog = null;
-  var drag = null;
+  var dog;
+  
+  var drag;
+  var bitmap;
   
   var center = {
     x: function() { return game.world.centerX; },
@@ -32,12 +34,16 @@ window.onload = function() {
     game.input.onDown.add(grab, this);
     game.input.onUp.add(release, this);
     
+    bitmap = game.add.bitmapData(width, height);
+    game.add.sprite(0, 0, bitmap);
+    
     dog = game.add.sprite(center.x(), center.y(), "dog");
     dog.inputEnabled = true;
     game.physics.p2.enable(dog);
   }
 
   function update() {
+    drawLine();
     if (!drag) {
       return;
     }
@@ -67,5 +73,30 @@ window.onload = function() {
   
   function release() {
     drag = null;
+  }
+  
+  function drawLine() {
+    bitmap.clear();
+    if (drag) {
+      if (drag.target) {
+        bitmap.ctx.beginPath();
+        bitmap.ctx.moveTo(dog.body.x, dog.body.y);
+        bitmap.ctx.lineTo(drag.position.x, drag.position.y);
+        bitmap.ctx.lineWidth = Math.max(10 - Math.floor(getDragDistance() / 20), 4);
+        bitmap.ctx.strokeStyle = "white";
+        bitmap.ctx.stroke();
+        bitmap.ctx.closePath();
+        bitmap.render();
+      }
+    }
+  }
+  
+  function getDragDistance() {
+    return Phaser.Math.distance(
+      game.input.x,
+      game.input.y,
+      drag.position.x,
+      drag.position.y
+    );
   }
 };
