@@ -27,8 +27,9 @@ window.onload = function() {
   var dog;
   var dogs = [];
   
-  var drag;
   var bitmap;
+  var cursors;
+  var drag;
   
   function preload() {
     game.time.advancedTiming = true;
@@ -42,6 +43,7 @@ window.onload = function() {
     game.input.onUp.add(release, this);
     game.physics.startSystem(Phaser.Physics.P2JS);
 
+    cursors = game.input.keyboard.createCursorKeys();
     bitmap = game.add.bitmapData(world.width, world.height);
     game.add.sprite(0, 0, bitmap);
     
@@ -57,8 +59,11 @@ window.onload = function() {
   }
 
   function update() {
+    if (DEBUG) {
+      debug();
+    }
     drawLine();
-    debug();
+    moveCamera();
     if (!drag) {
       return;
     }
@@ -72,6 +77,7 @@ window.onload = function() {
   }
   
   function grab() {
+    game.camera.unfollow();
     drag = {
       position: {
         x: game.input.x,
@@ -82,14 +88,13 @@ window.onload = function() {
         y: game.camera.y,
       }
     };
-    if (typeof dog !== "undefined" && dog.input.pointerOver()) {
+    if (dog && dog.input.pointerOver()) {
       game.physics.p2.enable(dog);
-      game.physics.p2.gravity.y = 800;
       drag.target = dog;
       drag.offset = {
         x: Math.round(drag.position.x - dog.body.x),
         y: Math.round(drag.position.y - dog.body.y),
-      }
+      };
     }
   }
   
@@ -129,12 +134,14 @@ window.onload = function() {
   }
   
   function fire() {
+    game.physics.p2.gravity.y = 800;
     var speed = 800;
     var x = (drag.position.x + drag.camera.x - dog.body.x) / 100;
     var y = (drag.position.y + drag.camera.y - dog.body.y) / 100;
     dog.body.velocity.x = speed * x;
     dog.body.velocity.y = speed * y;
     dog.inputEnabled = false;
+    game.camera.follow(dog, Phaser.Camera.FOLLOW_PLATFORMER);
     reload();
   }
   
@@ -147,11 +154,17 @@ window.onload = function() {
     }
   }
   
-  function debug() {
-    if (DEBUG) {
-      game.debug.text("Angry Dogs", 20, 30);
-      game.debug.text("FPS: " + game.time.fps, 20, 50);
-      game.debug.cameraInfo(game.camera, 20, 80);
+  function moveCamera() {
+    if (cursors.left.isDown) {
+      game.camera.x -= 10;
+    } else if (cursors.right.isDown) {
+      game.camera.x += 10;
     }
+  }
+  
+  function debug() {
+    game.debug.text("Angry Dogs", 20, 30);
+    game.debug.text("FPS: " + game.time.fps, 20, 50);
+    game.debug.cameraInfo(game.camera, 20, 80);
   }
 };
