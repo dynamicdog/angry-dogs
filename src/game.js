@@ -1,19 +1,15 @@
+var WIDTH = 960;
+var HEIGHT = 480;
+
+var world = {
+  width: WIDTH * 2,
+  height: HEIGHT - 100,
+};
+
 window.onload = function() {
-  var width = 960;
-  var height = 480;
-  
-  var world = {
-    width: width * 2,
-    height: height,
-  };
-  var slingshot = {
-    x: 300,
-    y: 300
-  };  
-  
   var game = new Phaser.Game(
-    width,
-    height,
+    WIDTH,
+    HEIGHT,
     Phaser.AUTO,
     "", {
       preload: preload,
@@ -22,6 +18,11 @@ window.onload = function() {
     }
   );
   
+  var slingshot = {
+    x: 300,
+    y: 300,
+  };  
+
   var DEBUG = true;
 
   var dog;
@@ -34,10 +35,11 @@ window.onload = function() {
   function preload() {
     game.time.advancedTiming = true;
     game.load.image("dog", "img/dog_32.png");
+    game.load.image("block", "img/block.png");
   }
 
   function create() {
-    game.world.setBounds(0, 0, world.width, world.height - 100);
+    game.world.setBounds(0, 0, world.width, world.height);
     game.stage.backgroundColor = "#6495ed";
     game.input.onDown.add(grab, this);
     game.input.onUp.add(release, this);
@@ -45,7 +47,7 @@ window.onload = function() {
     game.physics.p2.gravity.y = 800;
 
     cursors = game.input.keyboard.createCursorKeys();
-    bitmap = game.add.bitmapData(world.width, world.height);
+    bitmap = game.add.bitmapData(world.width, HEIGHT);
     game.add.sprite(0, 0, bitmap);
     
     var x = 0;
@@ -56,6 +58,7 @@ window.onload = function() {
       dogs.push(dog);
     }
     
+    Map.load(game, 0);
     reload();
   }
 
@@ -141,6 +144,7 @@ window.onload = function() {
     var y = (drag.position.y + drag.camera.y - dog.body.y) / 100;
     dog.body.velocity.x = speed * x;
     dog.body.velocity.y = speed * y;
+    dog.body.angularVelocity = 5;
     dog.inputEnabled = false;
     game.camera.follow(dog, Phaser.Camera.FOLLOW_PLATFORMER);
     reload();
