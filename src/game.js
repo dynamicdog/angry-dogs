@@ -42,6 +42,7 @@ window.onload = function() {
     game.input.onDown.add(grab, this);
     game.input.onUp.add(release, this);
     game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.p2.gravity.y = 800;
 
     cursors = game.input.keyboard.createCursorKeys();
     bitmap = game.add.bitmapData(world.width, world.height);
@@ -68,6 +69,7 @@ window.onload = function() {
       return;
     }
     if (drag.target) {
+      drag.target.body.velocity.y = 0;
       drag.target.body.x = game.input.x - drag.offset.x;
       drag.target.body.y = game.input.y - drag.offset.y;
     } else {
@@ -134,7 +136,6 @@ window.onload = function() {
   }
   
   function fire() {
-    game.physics.p2.gravity.y = 800;
     var speed = 800;
     var x = (drag.position.x + drag.camera.x - dog.body.x) / 100;
     var y = (drag.position.y + drag.camera.y - dog.body.y) / 100;
