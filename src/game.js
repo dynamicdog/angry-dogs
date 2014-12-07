@@ -1,13 +1,16 @@
 window.onload = function() {
   var width = 960;
   var height = 480;
+  
   var world = {
     width: width * 2,
-    height: height
+    height: height,
   };
+  var slingshot = {
+    x: 300,
+    y: 300
+  };  
   
-  var DEBUG = true;
-
   var game = new Phaser.Game(
     width,
     height,
@@ -18,17 +21,15 @@ window.onload = function() {
       update: update
     }
   );
+  
+  var DEBUG = true;
 
   var dog;
+  var dogs = [];
   
   var drag;
   var bitmap;
   
-  var center = {
-    x: function() { return game.world.centerX; },
-    y: function() { return game.world.centerY; },
-  };
-
   function preload() {
     game.time.advancedTiming = true;
     game.load.image("dog", "img/dog_32.png");
@@ -44,9 +45,15 @@ window.onload = function() {
     bitmap = game.add.bitmapData(world.width, world.height);
     game.add.sprite(0, 0, bitmap);
     
-    dog = game.add.sprite(center.x() / 2, center.y(), "dog");
-    dog.inputEnabled = true;
-    game.physics.p2.enable(dog);
+    var x = 0;
+    var y = 0;
+    for (var i = 0; i < 4; i++) {
+      var dog = game.add.sprite(slingshot.x - i * 40 - 100, slingshot.y + 48, "dog");
+      dog.anchor = new PIXI.Point(.5, .5);
+      dogs.push(dog);
+    }
+    
+    reload();
   }
 
   function update() {
@@ -75,7 +82,8 @@ window.onload = function() {
         y: game.camera.y,
       }
     };
-    if (dog.input.pointerOver()) {
+    if (typeof dog !== "undefined" && dog.input.pointerOver()) {
+      game.physics.p2.enable(dog);
       game.physics.p2.gravity.y = 800;
       drag.target = dog;
       drag.offset = {
@@ -126,6 +134,17 @@ window.onload = function() {
     var y = (drag.position.y + drag.camera.y - dog.body.y) / 100;
     dog.body.velocity.x = speed * x;
     dog.body.velocity.y = speed * y;
+    dog.inputEnabled = false;
+    reload();
+  }
+  
+  function reload() {
+    dog = dogs.pop();
+    if (dog) {
+      dog.inputEnabled = true;
+      dog.x = slingshot.x;
+      dog.y = slingshot.y;
+    }
   }
   
   function debug() {
