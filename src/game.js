@@ -34,8 +34,9 @@ window.onload = function() {
   
   function preload() {
     game.time.advancedTiming = true;
-    game.load.image("dog", "img/dog_32.png");
+    game.load.image("dog", "img/dog.png");
     game.load.image("block", "img/block.png");
+    game.load.image("block_long", "img/block_long.png");
   }
 
   function create() {
