@@ -10,7 +10,7 @@ window.onload = function() {
   var game = new Phaser.Game(
     WIDTH,
     HEIGHT,
-    Phaser.CANVAS,
+    Phaser.AUTO,
     "", {
       preload: preload,
       create: create,
